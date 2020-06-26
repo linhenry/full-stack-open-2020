@@ -10,11 +10,8 @@ const App = () => {
     const handleFilterCountries = event => {
         setFilterCountry(event.target.value)
     }
-    const filteredCountries = countries.filter(country => {
-        return (
-            country, country.name.toLowerCase().includes(filterCountry.toLowerCase())
-        )
-    })
+
+    const filteredCountries = countries.filter(country => country.name.toLowerCase().includes(filterCountry.toLowerCase()))
 
     useEffect(() => {
         axios
@@ -25,7 +22,7 @@ const App = () => {
             })
     }, [])
     // console.log('render', countries.length, 'countries')
-    console.log('filteredCountries', filteredCountries)
+    // console.log('filteredCountries', filteredCountries)
 
     return (
         <div>
@@ -39,7 +36,9 @@ const App = () => {
             <div>
                 {filteredCountries.length === 1 ?
                 <Country country={filteredCountries[0]} /> :
-                <Countries countries={filteredCountries} />
+                <Countries 
+                    countries={filteredCountries}
+                    setFilterCountry={setFilterCountry} />
                 }
             </div>
         </div>
