@@ -1,27 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import personService from './services/person'
+import Notification from './components/Notification'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
-
-const Notification = ({ message }) => {
-    if (message === null) {
-      return null
-    }
-  
-    return (
-      <div className="error">
-        {message}
-      </div>
-    )
-  }
 
 const App = () => {
     const [persons, setPersons] = useState([])
     const [filterName, setFilterName] = useState('')
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
-    const [errorMessage, setErrorMessage] = useState(null)
+    const [message, setMessage] = useState(null)
 
     useEffect(() => {
         personService
@@ -37,8 +26,6 @@ const App = () => {
         if (persons.some(person => person.name === newName)) {
             const person = persons.find(person => person.name === newName)
             const changedPerson = { ...person, number: newNumber }
-
-            console.log(person, changedPerson)
             if (window.confirm(`${person.name} is already added to the phonebook, replace the old number with a new one?`)) {
                 updatePerson(person.id, changedPerson)
             }
@@ -53,9 +40,9 @@ const App = () => {
                     setPersons(persons.concat(createdPerson))
                     setNewName('')
                     setNewNumber('')
-                    setErrorMessage(`Added ${createdPerson.name}`)
+                    setMessage({message: `Added ${createdPerson.name}`, error: false})
                     setTimeout(() => {
-                        setErrorMessage(null)
+                        setMessage(null)
                     }, 5000)
                 })
         }
@@ -66,10 +53,14 @@ const App = () => {
             .update(id, changedPerson)
             .then(returnedPerson => {
                 setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
-                setErrorMessage(`Updated ${returnedPerson.name}`)
+                setMessage({message: `Updated ${returnedPerson.name}`, error: false})
                 setTimeout(() => {
-                    setErrorMessage(null)
+                    setMessage(null)
                 }, 5000)
+            })
+            .catch(error => {
+                console.log(error)
+                setMessage({message: `Information of ${changedPerson.name} has already been removed from the server`, error: true})
             })
     }
 
@@ -98,7 +89,7 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
-            <Notification message={errorMessage} />
+            <Notification message={message} />
             <Filter
                 filterName={filterName}
                 handleFilterNameChange={handleFilterNameChange}
