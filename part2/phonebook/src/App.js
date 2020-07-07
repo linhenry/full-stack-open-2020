@@ -45,6 +45,10 @@ const App = () => {
                         setMessage(null)
                     }, 5000)
                 })
+                .catch(error => {
+                    console.log(error.response.data)
+                    setMessage({message: error.response.data.error, error: true})
+                })
         }
     }
 
@@ -59,8 +63,9 @@ const App = () => {
                 }, 5000)
             })
             .catch(error => {
-                console.log(error)
-                setMessage({message: `Information of ${changedPerson.name} has already been removed from the server`, error: true})
+                console.log(error.response.data)
+                setMessage({message: error.response.data.error, error: true})
+                // setMessage({message: `Information of ${changedPerson.name} has already been removed from the server`, error: true})
             })
     }
 
